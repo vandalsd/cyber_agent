@@ -41,6 +41,16 @@ export const sendChat = (text, session_id, agent) =>
   http
     .post("/orchestrator/chat", { text, session_id, agent })
     .then((r) => r.data);
+export const sendDebate = (text, session_id, panel) =>
+  http
+    .post("/orchestrator/debate", { text, session_id, panel })
+    .then((r) => r.data);
+export const streamChatUrl = (text, session_id, agent) => {
+  const params = new URLSearchParams({ text, token: getToken() });
+  if (session_id) params.set("session_id", session_id);
+  if (agent) params.set("agent", agent);
+  return `${API}/orchestrator/chat/stream?${params.toString()}`;
+};
 export const getReports = () => http.get("/reports").then((r) => r.data);
 export const getLogs = (level) =>
   http.get("/logs", { params: { level } }).then((r) => r.data);

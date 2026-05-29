@@ -11,6 +11,7 @@ import {
 import { clearToken } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { getHealth } from "@/lib/api";
+import CommandPalette from "@/components/CommandPalette";
 
 const LOGO_URL =
   "https://static.prod-images.emergentagent.com/jobs/48a92173-0bbb-4006-bdf0-a4dec7cb14c0/images/a3b32859667c42455cb9d590ac2376a69ba6b48abf4dc790394e2d4f74a65fd5.png";
@@ -125,6 +126,7 @@ export default function DashboardLayout() {
       <main className="flex-1 min-w-0 relative">
         <Outlet />
       </main>
+      <CommandPalette />
     </div>
   );
 }
