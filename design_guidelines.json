@@ -1,0 +1,145 @@
+{
+  "project_name": "Emergent Cybersecurity AI",
+  "theme_and_archetype": {
+    "domain": "Cybersecurity / Security Operations Center (SOC)",
+    "theme": "DARK",
+    "archetype": "Archetype 2 (The Performance Pro) mixed with Archetype 4 (Swiss High-Contrast)",
+    "vibe": "Tactical operations console, highly authoritative, precise, forensic, and high-visibility. Not a generic SaaS; it should feel like an elite security analyst workstation.",
+    "rationale": "For an autonomous multi-agent cybersecurity framework, power users need extreme data density and clarity. Dark mode reduces eye strain for long sessions. High-contrast neon accents provide instant status recognition."
+  },
+  "color_system": {
+    "base": {
+      "background": "#050505",
+      "surface_level_1": "#0A0A0C",
+      "surface_level_2": "#121214",
+      "surface_level_3": "#1A1A1D"
+    },
+    "borders": {
+      "subtle": "rgba(255, 255, 255, 0.08)",
+      "medium": "rgba(255, 255, 255, 0.15)",
+      "focus": "#00F0FF"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A1A1AA",
+      "tertiary": "#71717A",
+      "disabled": "#52525B"
+    },
+    "accents": {
+      "cyan_recon": "#00F0FF",
+      "red_critical": "#FF3333",
+      "amber_exploit": "#FFB000",
+      "green_online": "#00E676",
+      "violet_memory": "#9D4CDD"
+    },
+    "rules": [
+      "No pure black #000000, always tint with a subtle cool hue (#050505).",
+      "Avoid heavy gradients. Use 1px solid strokes or 2px inner glows.",
+      "Accents must be highly saturated to pop against the dark surfaces, acting as kinetic triggers."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "headings": "IBM Plex Sans",
+      "body": "Inter",
+      "mono": "JetBrains Mono"
+    },
+    "hierarchy": {
+      "h1": "text-3xl sm:text-4xl tracking-tighter font-semibold",
+      "h2": "text-xl sm:text-2xl tracking-tight font-medium",
+      "h3": "text-lg tracking-tight font-medium",
+      "body": "text-sm sm:text-base leading-relaxed",
+      "overline": "text-xs uppercase tracking-[0.15em] font-medium",
+      "terminal_log": "font-mono text-xs leading-tight"
+    },
+    "rules": [
+      "Use IBM Plex Sans for technical authority in headings.",
+      "Use JetBrains Mono strictly for forensic logs, agent code blocks, and the command palette.",
+      "Do not use generic sans for headings. Ensure high contrast for all text (minimum 4.5:1 WCAG AA)."
+    ]
+  },
+  "layout_and_spacing": {
+    "strategy": "The 'Control Room' Grid",
+    "grid_system": "Dense, data-correlation focused. Base grid: grid-cols-1 md:grid-cols-4 lg:grid-cols-6.",
+    "gaps": "Tight gaps (gap-4 or gap-6) to ensure high data density.",
+    "padding": "Internal padding for panels should be p-4 or p-6.",
+    "rules": [
+      "Every pixel must be utilized. Use h-full on children to ensure they stretch.",
+      "Optical alignment: Use flex-col and flex-row to perfectly align status indicators with text.",
+      "No jagged bottoms. Ensure grid rows align perfectly."
+    ]
+  },
+  "surface_styles": {
+    "dashboard_panels": {
+      "background": "bg-[#0A0A0C]",
+      "border": "border border-white/10",
+      "shadow": "none",
+      "radius": "rounded-md"
+    },
+    "terminal_console": {
+      "background": "bg-[#050505]",
+      "border": "border border-[#27272A]",
+      "shadow": "shadow-inner",
+      "radius": "rounded-md",
+      "extra": "Terminal look with subtle cyan focus rings focus:ring-1 focus:ring-cyan-500"
+    },
+    "glass_header": {
+      "background": "bg-[#050505]/80",
+      "blur": "backdrop-blur-md",
+      "border": "border-b border-white/10"
+    }
+  },
+  "component_guidelines": {
+    "agent_grid": "Bento-style tight grid. Each agent (Recon, Exploit, Code, Memory, Report, General) gets a compact card. Include an online/idle status dot (green #00E676 for online, gray for idle) and an icon. Hover state slightly lifts (-translate-y-0.5) and brightens border.",
+    "chat_console": "Central orchestrator area. Left-align agent responses, right-align user commands. Use 'Retro-Futurism' terminal look. Include command palette (Cmd+K style) for Telegram-like fast commands. Font: JetBrains Mono.",
+    "forensic_log_viewer": "Dense tabular data view. Fixed height with custom styled scrollbar. Use severity colors for log levels: RED for critical/error, AMBER for warning, CYAN for info/recon data.",
+    "reports_panel": "Markdown rendering area. Needs clean typography spacing (prose-invert for dark mode) to make generated security reports highly readable.",
+    "login_screen": "Immersive auth experience. Use the provided abstract background image with a heavy bg-black/60 overlay. Centered token-based bearer auth form. Use the provided tactical logo.",
+    "system_health": "Top KPI strip or sidebar module. Compact display for Ollama LLM connection status and overall uptime."
+  },
+  "motion_and_interaction": {
+    "hover_states": "Interactive elements must transition border colors (e.g., border-white/10 to border-white/30) and text colors. No heavy background color shifts.",
+    "focus_states": "Inputs and command palette must have high-contrast focus rings (focus:ring-2 focus:ring-cyan-500/50).",
+    "transitions": "Use fast, snappy transitions (duration-150 ease-out) to feel like a high-performance tactical interface."
+  },
+  "iconography": {
+    "library": "@phosphor-icons/react",
+    "style": "Regular or Duotone weight. Use sharp, technical icons.",
+    "installation": "yarn add @phosphor-icons/react"
+  },
+  "media_and_assets": {
+    "images": [
+      {
+        "category": "App Logo",
+        "url": "https://static.prod-images.emergentagent.com/jobs/48a92173-0bbb-4006-bdf0-a4dec7cb14c0/images/a3b32859667c42455cb9d590ac2376a69ba6b48abf4dc790394e2d4f74a65fd5.png",
+        "description": "Minimalist tactical cybersecurity logo icon, pure white and cyan glowing on black. Use in Header and Login screen."
+      },
+      {
+        "category": "Login Background",
+        "url": "https://static.prod-images.emergentagent.com/jobs/48a92173-0bbb-4006-bdf0-a4dec7cb14c0/images/1dd2be2b7f7ebe5295b4f8adaede489c5b575c721271d456839c2abc1861cdd9.png",
+        "description": "Abstract high-end cybersecurity visualization. Dark deep obsidian background. Must be placed behind the auth form with a black overlay (bg-black/60)."
+      },
+      {
+        "category": "Reports / Data Texture",
+        "url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwxfHxkYXJrJTIwc2VydmVyJTIwcm9vbSUyMHRlY2glMjBhYnN0cmFjdHxlbnwwfHx8fDE3ODAwNzQ1NzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract cable network tech background. Optional use as a very subtle, low-opacity (10%) background texture for empty states."
+      }
+    ]
+  },
+  "testing_attributes": {
+    "rules": [
+      "All interactive and key informational elements MUST include a data-testid attribute.",
+      "Use kebab-case, role-based format (e.g., data-testid='login-submit-button', data-testid='agent-status-recon')."
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. Setup Tailwind config with the custom color system (Background: #050505, Surface: #0A0A0C).",
+    "2. Install and configure fonts: IBM Plex Sans, Inter, JetBrains Mono.",
+    "3. Install @phosphor-icons/react for iconography.",
+    "4. Use Shadcn components for complex logic but aggressively strip Vercel-like styles to match the 'Grid Borders' 1px tactical UI.",
+    "5. Build the Login screen first using the provided logo and background image URLs.",
+    "6. Construct the dashboard with a sticky left sidebar or top nav, using the 'Control Room' dense grid for the main canvas.",
+    "7. Implement the terminal-like chat console and forensic log viewer utilizing JetBrains Mono.",
+    "8. Ensure every actionable element has a data-testid attribute."
+  ]
+}
