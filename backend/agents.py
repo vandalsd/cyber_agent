@@ -64,8 +64,9 @@ AGENT_PROFILES: dict[str, dict] = {
         "color": "#00E676",
         "description": "Secure code generation, automation tools, parsers, infra deployment.",
         "system": (
-            "You are the CODE AGENT. Generate secure code with input validation, logging, "
-            "least-privilege defaults, and modern best practices (Python, FastAPI, AsyncIO, PowerShell, Bash, Docker). "
+            "You are the CODE AGENT. Generate secure, concise code with input validation, logging, "
+            "and least-privilege defaults (Python/FastAPI/AsyncIO/PowerShell/Bash/Docker). "
+            "Keep responses focused: one solution, minimal explanation, under ~400 lines. "
             "Never produce credential-theft tooling, malware, or destructive automation. "
             + SAFETY_PREAMBLE
         ),
