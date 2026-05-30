@@ -256,6 +256,7 @@ async def orchestrator_chat(req: ChatRequest, _: str = Depends(require_auth)):
                 session_id=f"{session_id}-{chosen_agent}",
                 system_prompt=profile["system"],
                 user_text=req.text,
+                agent_id=chosen_agent,
             )
         except Exception as exc:
             logger.exception("LLM error")
@@ -341,6 +342,7 @@ async def orchestrator_chat_stream(
                     session_id=f"{sid}-{chosen}",
                     system_prompt=profile["system"],
                     user_text=text,
+                    agent_id=chosen,
                 )
             except Exception as exc:
                 await write_log("ERROR", "llm", f"stream backend error: {exc}", {"session": sid})
@@ -449,6 +451,7 @@ async def orchestrator_debate(req: DebateRequest, _: str = Depends(require_auth)
                 session_id=f"{session_id}-debate-{aid}",
                 system_prompt=p["system"],
                 user_text=prompt,
+                agent_id=aid,
             )
         except Exception as exc:
             txt = f"[error: {exc}]"
@@ -473,6 +476,7 @@ async def orchestrator_debate(req: DebateRequest, _: str = Depends(require_auth)
             session_id=f"{session_id}-debate-synth",
             system_prompt=orch["system"],
             user_text=synth_prompt,
+            agent_id="orchestrator",
         )
     except Exception as exc:
         synthesis_text = f"[orchestrator error: {exc}]"

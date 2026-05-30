@@ -128,6 +128,7 @@ class TelegramWorker:
                 session_id=f"telegram-{chat_id}-{agent_id}",
                 system_prompt=profile["system"],
                 user_text=body,
+                agent_id=agent_id,
             )
         except Exception as exc:
             reply = f"[LLM error] {exc}"

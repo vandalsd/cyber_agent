@@ -1,0 +1,39 @@
+{
+  "summary": "Iteration 3 (per-agent Ollama model routing) verified end-to-end. New /api/health.llm.agent_models dict returns all 7 agent ids with the expected GTX-1650-Ti-tuned defaults, ollama_model field is renamed to ollama_global_model, and env overrides from backend/.env are honored. All 11 new backend pytests PASS (6.3s). Iteration 2 regression: 7/7 iteration2 tests + 12/13 gateway tests PASS — the single failure is the same pre-existing 502 ingress timeout on long /api/orchestrator/chat prompts (test_route_exploit), unchanged from iterations 1 & 2. Frontend Health page verified via Playwright: new Per-Agent Models section renders all 7 rows with data-testid='agent-model-<id>', each showing agent id + cyan (#00F0FF / rgb(0,240,255)) model string; 4 top stat cards (Gateway/MongoDB/LLM Provider/Telegram) still display correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/orchestrator/chat (non-stream, long verbose prompts ~60s+)", "issue": "Ingress 502 — pre-existing from iterations 1 & 2, not a regression. Streaming endpoint /api/orchestrator/chat/stream mitigates this for new flows."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration3.py",
+    "/app/backend/tests/test_iteration2.py",
+    "/app/backend/tests/test_gateway.py",
+    "/app/test_reports/pytest/iteration3_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "agents.py LLMBackend.model_for() reads os.environ on every call — fine for low traffic but a tiny perf nit; consider memoizing in __init__ or via @lru_cache. Acceptable as-is.",
+    "agents.py: ollama_global_model is captured at __init__ time but per-agent overrides are read live from env. Inconsistent timing — if an admin updates .env after backend start, global model stays stale while per-agent values would refresh. Either capture both at init or read both live for consistency.",
+    "Health.jsx renders Object.entries(h?.llm?.agent_models || {}) — relies on JS object insertion order. Backend dict preserves order in Python 3.7+ and JSON serialization keeps it, so orchestrator-first ordering is stable, but a defined ORDER array would be more defensive.",
+    "Default models in DEFAULT_AGENT_MODELS are hardcoded duplicates with backend/.env values; if they ever drift this becomes a silent bug. Consider moving the canonical map to .env.example only or generating one from the other."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration3.py (new)"
+  ],
+  "success_rate": {
+    "backend": "100% on iteration 3 (11/11) and iteration 2 (7/7); 12/13 on gateway regression — same pre-existing 502 unchanged",
+    "frontend": "100% — Health page Per-Agent Models section + 4 top stat cards verified end-to-end"
+  },
+  "test_credentials": "AUTH_TOKEN=emergent-cyber-token-2026 (from /app/backend/.env). /app/memory/test_credentials.md still absent.",
+  "seed_data_creation": "None.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iteration 3 added per-agent Ollama model routing visible in GET /api/health -> llm.agent_models (dict of 7 agent ids). Field ollama_model is renamed to ollama_global_model. Backend pytests live at /app/backend/tests/test_iteration{2,3}.py and test_gateway.py. The lone failing gateway test (test_route_exploit) is a pre-existing ingress 502 on long LLM responses, unrelated to iteration 3. On the Health page each agent row has data-testid='agent-model-<agent_id>'. Per iteration 2 advice, on the Console page prefer pressing Enter inside chat-input over clicking chat-send-button to avoid Sonner toast / Emergent badge pointer-event interception in the bottom-right corner."
+}

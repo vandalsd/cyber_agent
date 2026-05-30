@@ -146,36 +146,77 @@ def route_intent(text: str) -> str:
 
 # ---------- LLM Backend Layer ----------
 
+# Default per-agent Ollama models — tuned for 4 GB VRAM (GTX 1650 Ti and similar).
+# Override any of these via env: OLLAMA_MODEL_<AGENT>= (e.g. OLLAMA_MODEL_CODE=qwen2.5-coder:3b)
+DEFAULT_AGENT_MODELS: dict[str, str] = {
+    "orchestrator": "phi3.5:3.8b",     # reasoning specialist for debate synthesis
+    "recon":        "qwen2.5:3b",       # general + tool knowledge for OSINT
+    "exploit":      "qwen2.5:3b",       # technical reasoning + CVE knowledge
+    "code":         "qwen2.5-coder:3b", # #1 code model under 4B
+    "memory":       "llama3.2:3b",      # context handling, summarization
+    "report":       "llama3.2:3b",      # clean markdown writing
+    "general":      "qwen2.5:3b",       # versatile fallback
+}
+
+
 class LLMBackend:
-    """Abstraction over Ollama HTTP and Emergent LLM key providers."""
+    """Abstraction over Ollama HTTP and Emergent LLM key providers.
+
+    Supports per-agent model routing via env overrides:
+        OLLAMA_MODEL_ORCHESTRATOR, OLLAMA_MODEL_RECON, OLLAMA_MODEL_EXPLOIT,
+        OLLAMA_MODEL_CODE, OLLAMA_MODEL_MEMORY, OLLAMA_MODEL_REPORT,
+        OLLAMA_MODEL_GENERAL
+    Falls back to OLLAMA_MODEL (global default), then to the hardcoded DEFAULT_AGENT_MODELS.
+    """
 
     def __init__(self):
         self.provider = os.environ.get("LLM_PROVIDER", "emergent").lower()
         self.ollama_url = os.environ.get("OLLAMA_URL", "").rstrip("/")
-        self.ollama_model = os.environ.get("OLLAMA_MODEL", "llama3.2")
+        self.ollama_global_model = os.environ.get("OLLAMA_MODEL", "").strip()
         self.emergent_key = os.environ.get("EMERGENT_LLM_KEY", "")
         self.emergent_model = os.environ.get("LLM_MODEL", "claude-sonnet-4-6")
 
-    async def chat(self, session_id: str, system_prompt: str, user_text: str) -> str:
-        # Prefer Ollama if configured and provider is ollama
+    def model_for(self, agent_id: Optional[str]) -> str:
+        """Resolve which Ollama model to use for a given agent."""
+        if agent_id:
+            env_key = f"OLLAMA_MODEL_{agent_id.upper()}"
+            override = os.environ.get(env_key, "").strip()
+            if override:
+                return override
+        if self.ollama_global_model:
+            return self.ollama_global_model
+        return DEFAULT_AGENT_MODELS.get(agent_id or "general", "qwen2.5:3b")
+
+    def agent_model_map(self) -> dict[str, str]:
+        return {aid: self.model_for(aid) for aid in DEFAULT_AGENT_MODELS}
+
+    async def chat(
+        self,
+        session_id: str,
+        system_prompt: str,
+        user_text: str,
+        agent_id: Optional[str] = None,
+    ) -> str:
         if self.provider == "ollama" and self.ollama_url:
             try:
-                return await self._ollama_chat(system_prompt, user_text)
-            except Exception as exc:  # fall through to emergent
+                return await self._ollama_chat(system_prompt, user_text, agent_id)
+            except Exception as exc:
                 return await self._emergent_chat(session_id, system_prompt, user_text, ollama_err=str(exc))
         return await self._emergent_chat(session_id, system_prompt, user_text)
 
-    async def _ollama_chat(self, system_prompt: str, user_text: str) -> str:
+    async def _ollama_chat(
+        self, system_prompt: str, user_text: str, agent_id: Optional[str]
+    ) -> str:
         url = f"{self.ollama_url}/api/chat"
         payload = {
-            "model": self.ollama_model,
+            "model": self.model_for(agent_id),
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_text},
             ],
             "stream": False,
         }
-        async with httpx.AsyncClient(timeout=60) as client:
+        async with httpx.AsyncClient(timeout=120) as client:
             r = await client.post(url, json=payload)
             r.raise_for_status()
             data = r.json()
@@ -207,7 +248,8 @@ class LLMBackend:
             "active_provider": self.provider,
             "ollama_configured": bool(self.ollama_url),
             "ollama_url": self.ollama_url or None,
-            "ollama_model": self.ollama_model,
+            "ollama_global_model": self.ollama_global_model or None,
+            "agent_models": self.agent_model_map(),
             "emergent_configured": bool(self.emergent_key),
             "emergent_model": self.emergent_model,
         }

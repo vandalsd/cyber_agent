@@ -21,6 +21,15 @@ function Stat({ label, value, ok, accent = "#00F0FF" }) {
   );
 }
 
+function Row({ k, v }) {
+  return (
+    <div className="flex items-center justify-between text-xs font-mono">
+      <span className="text-zinc-400">{k}</span>
+      <span className="text-zinc-200 truncate ml-3">{v}</span>
+    </div>
+  );
+}
+
 export default function Health() {
   const [h, setH] = useState(null);
   const [tg, setTg] = useState(null);
@@ -74,9 +83,26 @@ export default function Health() {
               LLM Configuration
             </div>
           </div>
-          <pre className="font-mono text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap">
-{JSON.stringify(h?.llm || {}, null, 2)}
-          </pre>
+          <div className="space-y-2 mb-3">
+            <Row k="Provider" v={(h?.llm?.active_provider || "n/a").toUpperCase()} />
+            <Row k="Ollama URL" v={h?.llm?.ollama_url || "—"} />
+            <Row k="Emergent Model" v={h?.llm?.emergent_model || "—"} />
+          </div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-2 mt-4">
+            Per-Agent Models
+          </div>
+          <div className="space-y-1.5">
+            {Object.entries(h?.llm?.agent_models || {}).map(([aid, model]) => (
+              <div
+                key={aid}
+                className="flex items-center justify-between text-xs font-mono"
+                data-testid={`agent-model-${aid}`}
+              >
+                <span className="text-zinc-400">{aid}</span>
+                <span className="text-[#00F0FF]">{model}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="border border-white/10 rounded-md p-5 bg-[#0a0a0c]">
